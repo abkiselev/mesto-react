@@ -4,8 +4,9 @@ import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
+// import api from '../utils/Api';
 
-function App(props) {
+function App() {
 
     const [isEditProfilePopupOpen, setEditPopupState] = React.useState(false);
     const [isAddPlacePopupOpen, setAddPlacePopupState] = React.useState(false);
