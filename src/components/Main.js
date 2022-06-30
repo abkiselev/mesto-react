@@ -1,41 +1,31 @@
-function Main() {
-
-    function handleEditAvatarClick() {
-        document.querySelector('#edit-avatar-popup').classList.toggle('popup_active')
-    }
-
-    function handleEditProfileClick() {
-        document.querySelector('#edit-profile-popup').classList.toggle('popup_active')
-    }
-
-    function handleAddPlaceClick() {
-        document.querySelector('#add-foto-popup').classList.toggle('popup_active')
-    }
+function Main(props) {
+    
 
 
     return (
         <main className="main">
             <section className="profile">
                 <div className="profile__card">
-                    <div className="profile__avatar" onClick={handleEditAvatarClick}>               
+                    <div className="profile__avatar" onClick={props.onEditAvatar}>
                         <img className="profile__img" src="./images/profile_img.jpg'" alt="Фото"/>       
                     </div>
                     
                         <div className="profile__info">
                             <div className="profile__title">
                                 <h1 className="profile__name">Жак-Ив Кусто</h1>
-                                <button className="profile__edit-button" type="button" onClick={handleEditProfileClick}></button>
+                                <button className="profile__edit-button" type="button" onClick={props.onEditProfile}></button>
                             </div>
                             <p className="profile__description">Исследователь океана</p>
                         </div>
                 </div>
-                <button className="profile__add-button" type="button" onClick={handleAddPlaceClick}></button>
+                <button className="profile__add-button" type="button" onClick={props.onAddPlace}></button>
             </section>
-                <section>
-                    <ul className="cards">
 
-                    </ul>
-                </section>
+            <section>
+                <ul className="cards">
+
+                </ul>
+            </section>
         </main>
     );
 }
