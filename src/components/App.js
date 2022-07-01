@@ -7,38 +7,38 @@ import ImagePopup from './ImagePopup';
 
 function App() {
 
-    const [isEditProfilePopupOpen, setEditPopupState] = useState(false);
-    const [isAddPlacePopupOpen, setAddPlacePopupState] = useState(false);
-    const [isEditAvatarPopupOpen, setEditAvatarPopupState] = useState(false);
+    const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+    const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+    const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
 
     const [selectedCard, setSelectedCard] = useState({});
-    const [isCardPopupOpen, setCardPopupState] = useState(false);
+    const [isCardPopupOpen, setIsCardPopupOpenState] = useState(false);
     
 
     function handleEditProfileClick() {
-        setEditPopupState(!isEditProfilePopupOpen)
+        setIsEditProfilePopupOpen(true)
     }
 
     function handleAddPlaceClick() {
-        setAddPlacePopupState(!isAddPlacePopupOpen)
+        setIsAddPlacePopupOpen(true)
     }
 
     function handleEditAvatarClick() {        
-        setEditAvatarPopupState(!isEditAvatarPopupOpen)
+        setIsEditAvatarPopupOpen(true)
     }
 
     function handleCardClick(card) {
         setSelectedCard(card)
-        setCardPopupState(!isCardPopupOpen)
+        setIsCardPopupOpenState(true)
     }
 
     function closeAllPopups() {
-        isEditProfilePopupOpen && handleEditProfileClick()
-        isAddPlacePopupOpen && handleAddPlaceClick()
-        isEditAvatarPopupOpen && handleEditAvatarClick() 
+        isEditProfilePopupOpen && setIsEditProfilePopupOpen(false)
+        isAddPlacePopupOpen && setIsAddPlacePopupOpen(false)
+        isEditAvatarPopupOpen && setIsEditAvatarPopupOpen(false) 
 
         if(isCardPopupOpen){
-            setCardPopupState(!isCardPopupOpen)
+            setIsCardPopupOpenState(false)
             setSelectedCard({}) 
         }
         
@@ -62,8 +62,8 @@ function App() {
             <PopupWithForm
                 onClose={closeAllPopups}
                 isOpen={isEditProfilePopupOpen}
-                name={'edit-profile'}
-                title={'Редактировать профиль'}
+                name='edit-profile'
+                title='Редактировать профиль'
             >       
 
                 <fieldset className="popup__inputs">
@@ -99,8 +99,8 @@ function App() {
             <PopupWithForm
                 onClose={closeAllPopups}
                 isOpen={isAddPlacePopupOpen}
-                name={'add-card'}
-                title={'Новое место'}
+                name='add-card'
+                title='Новое место'
             >       
                 
                 <fieldset className="popup__inputs">
@@ -133,8 +133,8 @@ function App() {
             <PopupWithForm
                 onClose={closeAllPopups}
                 isOpen={isEditAvatarPopupOpen}
-                name={'edit-avatar'}
-                title={'Обновить аватар'}
+                name='edit-avatar'
+                title='Обновить аватар'
             >       
                 
                 <fieldset className="popup__inputs">
