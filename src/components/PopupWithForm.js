@@ -1,7 +1,6 @@
 function PopupWithForm(props) {
 
     return (
-        <>
             <section id={`${props.name}-popup`} className={`popup popup_type_${props.name} ${props.isOpen && 'popup_active'}`}>
                 <div className="popup__container">
                     <h2 className="popup__title">
@@ -15,10 +14,6 @@ function PopupWithForm(props) {
                 </div>
                 <div className="popup__bg" onClick={props.onClose}></div>
             </section>
-
-
-
-        </>
     );
 }
 

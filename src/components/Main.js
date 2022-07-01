@@ -1,14 +1,15 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import api from '../utils/Api';
+import Card from './Card';
 
 function Main(props) {
-    const [userName, setUserName] = React.useState('');
-    const [userDescription, setUserDescription] = React.useState('');
-    const [userAvatar, setUserAvatar] = React.useState('');
+    const [userName, setUserName] = useState('');
+    const [userDescription, setUserDescription] = useState('');
+    const [userAvatar, setUserAvatar] = useState('');
 
-    const [cards, setInitialCards] = React.useState([]);
+    const [cards, setInitialCards] = useState([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         api.getProfileInfo()
         .then(res =>{
             setUserName(res.name)
@@ -17,11 +18,10 @@ function Main(props) {
         })
     }, [])
 
-    React.useEffect(() => {
+    useEffect(() => {
         api.getInitialCards()
         .then(res =>{
             setInitialCards(res)
-            
         })
     }, [])
 
@@ -48,23 +48,9 @@ function Main(props) {
             <section>
                 <ul className="cards">
 
-                {cards.map((card, i) => (
-
-                        <li className="card" key={i}>
-                            <img className="card__img" src={card.link} alt={card.name} />
-                            <div className="card__heading">
-                                <h2 className="card__title">{card.name}</h2>
-                                <div>
-                                    <button className="card__like-button" type="button"></button>
-                                    <p className="card__like-counter">{card.likes.length}</p>
-                                </div>
-                                
-                            </div>
-                            <button className="card__trash-button" type="button"></button>
-                        </li>
-
-                ))}
-
+                    {cards.map((card) => (
+                        <Card card={card} key={card._id} onCardClick={props.onCardClick}/>
+                    ))}
 
                 </ul>
             </section>
