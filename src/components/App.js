@@ -3,11 +3,11 @@ import Footer from './Footer';
 import Header from './Header';
 import ImagePopup from './ImagePopup';
 import Main from './Main';
-import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
 import api from '../utils/Api';
-import {CurrentUserContext} from '../contexts/CurrentUserContext';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function App() {
     const [currentUser, setCurrentUser] = useState([]);
@@ -19,6 +19,37 @@ function App() {
     const [selectedCard, setSelectedCard] = useState({});
     const [isCardPopupOpen, setIsCardPopupOpenState] = useState(false);
 
+    const [cards, setInitialCards] = useState([]);
+
+    useEffect(() => {
+        api.getInitialCards()
+        .then(res =>{
+            setInitialCards(res)
+        })
+    }, [cards])
+
+    function handleCardLike(card) {
+        const isLiked = card.likes.some(i => i._id === currentUser._id);
+        
+        api.setCardLike(card._id, !isLiked ? 'PUT' : 'DELETE').then((newCard) => {
+            setInitialCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        });
+    } 
+
+    function handleCardDelete(card) {    
+        api.deleteCard(card._id)
+            .then((res) => {
+                setInitialCards((newCards) => newCards.filter((c) => c._id !== card._id));
+            });
+    } 
+
+    function handleAddPlaceSubmit({name, link}) {
+        api.createNewCard({name, link})
+            .then(res => setInitialCards([...cards, res]))
+
+        closeAllPopups()
+    }
+
     useEffect(() => {
         api.getProfileInfo()
             .then(res => setCurrentUser(res))
@@ -28,12 +59,14 @@ function App() {
     function handleUpdateUser({name, about}) {
         api.changeProfileInfo({name, about})
             .then(res => setCurrentUser(res));
+
         closeAllPopups()
     }
 
     function handleUpdateAvatar({avatar}) {
         api.changeProfileAvatar({avatar})
             .then(res => setCurrentUser(res));
+
         closeAllPopups()
     }
 
@@ -73,6 +106,9 @@ function App() {
                 <Header />
 
                 <Main
+                    cards={cards}
+                    onCardLike={handleCardLike}
+                    onCardDelete={handleCardDelete}
                     onEditProfile={handleEditProfileClick}
                     onAddPlace={handleAddPlaceClick}
                     onEditAvatar={handleEditAvatarClick}
@@ -81,43 +117,11 @@ function App() {
 
                 <Footer />
 
-                <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/> 
-
-                <PopupWithForm
-                    onClose={closeAllPopups}
-                    isOpen={isAddPlacePopupOpen}
-                    name='add-card'
-                    title='Новое место'
-                >       
-                    
-                    <fieldset className="popup__inputs">
-                        <input 
-                        name="name"
-                        id="edit-foto-name"
-                        className="popup__input popup__input_type_mesto-name" 
-                        type="text" 
-                        placeholder="Название" 
-                        minLength="2"
-                        maxLength="30"
-                        noValidate
-                        required
-                        />
-                        <p className="popup__error edit-foto-name-error"></p>
-                        <input 
-                        name="link"
-                        id="edit-foto-url"
-                        className="popup__input popup__input_type_mesto-url" 
-                        type="url" 
-                        placeholder="Ссылка на картинку" 
-                        noValidate
-                        required
-                        />
-                        <p className="popup__error edit-foto-url-error"></p>
-                    </fieldset>
-                        
-                </PopupWithForm>
+                <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>                 
 
                 <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+
+                <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
 
                     
                 <ImagePopup
