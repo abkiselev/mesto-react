@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import Header from './Header';
-import Main from './Main';
+import { useEffect, useState } from 'react';
 import Footer from './Footer';
-import PopupWithForm from './PopupWithForm';
+import Header from './Header';
 import ImagePopup from './ImagePopup';
+import Main from './Main';
+import PopupWithForm from './PopupWithForm';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import api from '../utils/Api';
+import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
 function App() {
+    const [currentUser, setCurrentUser] = useState([]);
 
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
@@ -13,7 +18,24 @@ function App() {
 
     const [selectedCard, setSelectedCard] = useState({});
     const [isCardPopupOpen, setIsCardPopupOpenState] = useState(false);
+
+    useEffect(() => {
+        api.getProfileInfo()
+            .then(res => setCurrentUser(res))
+    }, [])
+
     
+    function handleUpdateUser({name, about}) {
+        api.changeProfileInfo({name, about})
+            .then(res => setCurrentUser(res));
+        closeAllPopups()
+    }
+
+    function handleUpdateAvatar({avatar}) {
+        api.changeProfileAvatar({avatar})
+            .then(res => setCurrentUser(res));
+        closeAllPopups()
+    }
 
     function handleEditProfileClick() {
         setIsEditProfilePopupOpen(true)
@@ -47,118 +69,64 @@ function App() {
 
     return (
         <div className="container">
+            <CurrentUserContext.Provider value={currentUser}>
+                <Header />
 
-            <Header />
+                <Main
+                    onEditProfile={handleEditProfileClick}
+                    onAddPlace={handleAddPlaceClick}
+                    onEditAvatar={handleEditAvatarClick}
+                    onCardClick={handleCardClick}
+                />
 
-            <Main
-                onEditProfile={handleEditProfileClick}
-                onAddPlace={handleAddPlaceClick}
-                onEditAvatar={handleEditAvatarClick}
-                onCardClick={handleCardClick}
-            />
+                <Footer />
 
-            <Footer />
+                <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/> 
 
-            <PopupWithForm
-                onClose={closeAllPopups}
-                isOpen={isEditProfilePopupOpen}
-                name='edit-profile'
-                title='Редактировать профиль'
-            >       
+                <PopupWithForm
+                    onClose={closeAllPopups}
+                    isOpen={isAddPlacePopupOpen}
+                    name='add-card'
+                    title='Новое место'
+                >       
+                    
+                    <fieldset className="popup__inputs">
+                        <input 
+                        name="name"
+                        id="edit-foto-name"
+                        className="popup__input popup__input_type_mesto-name" 
+                        type="text" 
+                        placeholder="Название" 
+                        minLength="2"
+                        maxLength="30"
+                        noValidate
+                        required
+                        />
+                        <p className="popup__error edit-foto-name-error"></p>
+                        <input 
+                        name="link"
+                        id="edit-foto-url"
+                        className="popup__input popup__input_type_mesto-url" 
+                        type="url" 
+                        placeholder="Ссылка на картинку" 
+                        noValidate
+                        required
+                        />
+                        <p className="popup__error edit-foto-url-error"></p>
+                    </fieldset>
+                        
+                </PopupWithForm>
 
-                <fieldset className="popup__inputs">
+                <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
 
-                    <input 
-                    name="name"
-                    id="edit-profile-name"
-                    className="popup__input popup__input_type_name" 
-                    type="text" 
-                    minLength="2"
-                    maxLength="40"
-                    noValidate
-                    required
-                    />
-                    <p className="popup__error edit-profile-name-error"></p>
+                    
+                <ImagePopup
+                    selectedCard={selectedCard}
+                    isOpen={isCardPopupOpen}
+                    onClose={closeAllPopups}
+                />
 
-                    <input 
-                    name="about"
-                    id="edit-profile-bio"
-                    className="popup__input popup__input_type_descr" 
-                    type="text" 
-                    minLength="2"
-                    maxLength="200"
-                    noValidate
-                    required
-                    />
-                    <p className="popup__error edit-profile-bio-error"></p>
-
-                </fieldset>
-
-            </PopupWithForm>
-
-            <PopupWithForm
-                onClose={closeAllPopups}
-                isOpen={isAddPlacePopupOpen}
-                name='add-card'
-                title='Новое место'
-            >       
-                
-                <fieldset className="popup__inputs">
-                    <input 
-                    name="name"
-                    id="edit-foto-name"
-                    className="popup__input popup__input_type_mesto-name" 
-                    type="text" 
-                    placeholder="Название" 
-                    minLength="2"
-                    maxLength="30"
-                    noValidate
-                    required
-                    />
-                    <p className="popup__error edit-foto-name-error"></p>
-                    <input 
-                    name="link"
-                    id="edit-foto-url"
-                    className="popup__input popup__input_type_mesto-url" 
-                    type="url" 
-                    placeholder="Ссылка на картинку" 
-                    noValidate
-                    required
-                    />
-                    <p className="popup__error edit-foto-url-error"></p>
-                </fieldset>
-                      
-            </PopupWithForm>
-
-            <PopupWithForm
-                onClose={closeAllPopups}
-                isOpen={isEditAvatarPopupOpen}
-                name='edit-avatar'
-                title='Обновить аватар'
-            >       
-                
-                <fieldset className="popup__inputs">
-                    <input 
-                    name="avatar"
-                    id="edit-avatar-url"
-                    className="popup__input popup__input_type_mesto-url" 
-                    type="url" 
-                    placeholder="Ссылка на картинку" 
-                    noValidate
-                    required
-                    />
-                    <p className="popup__error edit-avatar-url-error"></p>
-                </fieldset>
-            
-            </PopupWithForm>
-
-                
-            <ImagePopup
-                selectedCard={selectedCard}
-                isOpen={isCardPopupOpen}
-                onClose={closeAllPopups}
-            />
-
+            </CurrentUserContext.Provider>
         </div>
     );
 }
