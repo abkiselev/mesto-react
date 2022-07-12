@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Footer from './Footer';
 import Header from './Header';
 import ImagePopup from './ImagePopup';
@@ -6,6 +6,7 @@ import Main from './Main';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import DeleteCardPopup from './DeleteCardPopup';
 import api from '../utils/Api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
@@ -15,18 +16,29 @@ function App() {
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+    const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] = useState(false);
 
     const [selectedCard, setSelectedCard] = useState({});
     const [isCardPopupOpen, setIsCardPopupOpenState] = useState(false);
 
     const [cards, setInitialCards] = useState([]);
 
+    const [submitButtonText, setSubmitButtonText] = useState('Сохранить');
+    const [submitDeleteButtonText, setSubmitDeleteButtonText] = useState('Да');
+
+
     useEffect(() => {
         api.getInitialCards()
-        .then(res =>{
-            setInitialCards(res)
-        })
+            .then(res =>{
+                setInitialCards(res)
+            })
     }, [cards])
+
+    useEffect(() => {
+        api.getProfileInfo()
+            .then(res => setCurrentUser(res))
+    }, [])
+
 
     function handleCardLike(card) {
         const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -35,39 +47,59 @@ function App() {
             setInitialCards((state) => state.map((c) => c._id === card._id ? newCard : c));
         });
     } 
+    
 
-    function handleCardDelete(card) {    
+    function handleCardDelete(card) {  
+        setSubmitDeleteButtonText("Удаление...");
+
         api.deleteCard(card._id)
             .then((res) => {
                 setInitialCards((newCards) => newCards.filter((c) => c._id !== card._id));
-            });
+                closeAllPopups();
+            })
+            .finally(() => {
+                setSubmitDeleteButtonText("Да");
+            })
     } 
 
     function handleAddPlaceSubmit({name, link}) {
-        api.createNewCard({name, link})
-            .then(res => setInitialCards([...cards, res]))
+        setSubmitButtonText("Сохранение...");
 
-        closeAllPopups()
+        api.createNewCard({name, link})
+            .then(res => {
+                setInitialCards([...cards, res]);
+                closeAllPopups();
+            })
+            .finally(() => {
+                setSubmitButtonText("Сохранить");
+            })
     }
 
-    useEffect(() => {
-        api.getProfileInfo()
-            .then(res => setCurrentUser(res))
-    }, [])
 
-    
     function handleUpdateUser({name, about}) {
-        api.changeProfileInfo({name, about})
-            .then(res => setCurrentUser(res));
+        setSubmitButtonText("Сохранение...");
 
-        closeAllPopups()
+        api.changeProfileInfo({name, about})
+            .then(res => {
+                setCurrentUser(res);
+                closeAllPopups();
+            })
+            .finally(() => {
+                setSubmitButtonText("Сохранить");
+            })
     }
 
     function handleUpdateAvatar({avatar}) {
-        api.changeProfileAvatar({avatar})
-            .then(res => setCurrentUser(res));
+        setSubmitButtonText("Сохранение...");
 
-        closeAllPopups()
+        api.changeProfileAvatar({avatar})
+            .then(res => {
+                setCurrentUser(res);
+                closeAllPopups();
+            })
+            .finally(() => {
+                setSubmitButtonText("Сохранить");
+            })
     }
 
     function handleEditProfileClick() {
@@ -87,10 +119,20 @@ function App() {
         setIsCardPopupOpenState(true)
     }
 
+    function handleDeleteButtonClick(card) {
+        setSelectedCard(card)
+        setIsDeleteCardPopupOpen(true)
+    }
+
     function closeAllPopups() {
         isEditProfilePopupOpen && setIsEditProfilePopupOpen(false)
         isAddPlacePopupOpen && setIsAddPlacePopupOpen(false)
         isEditAvatarPopupOpen && setIsEditAvatarPopupOpen(false) 
+
+        if(isDeleteCardPopupOpen){
+            setIsDeleteCardPopupOpen(false)
+            setSelectedCard({}) 
+        }
 
         if(isCardPopupOpen){
             setIsCardPopupOpenState(false)
@@ -108,7 +150,7 @@ function App() {
                 <Main
                     cards={cards}
                     onCardLike={handleCardLike}
-                    onCardDelete={handleCardDelete}
+                    onCardDelete={handleDeleteButtonClick}
                     onEditProfile={handleEditProfileClick}
                     onAddPlace={handleAddPlaceClick}
                     onEditAvatar={handleEditAvatarClick}
@@ -117,13 +159,35 @@ function App() {
 
                 <Footer />
 
-                <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>                 
+                <EditProfilePopup
+                    isOpen={isEditProfilePopupOpen}
+                    onClose={closeAllPopups}
+                    onUpdateUser={handleUpdateUser}
+                    submitButtonText={submitButtonText}
+                />                 
 
-                <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+                <EditAvatarPopup
+                    isOpen={isEditAvatarPopupOpen}
+                    onClose={closeAllPopups}
+                    onUpdateAvatar={handleUpdateAvatar}
+                    submitButtonText={submitButtonText}
+                />
 
-                <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
+                <AddPlacePopup
+                    isOpen={isAddPlacePopupOpen}
+                    onClose={closeAllPopups}
+                    onAddPlace={handleAddPlaceSubmit}
+                    submitButtonText={submitButtonText}
+                />
 
-                    
+                <DeleteCardPopup
+                    selectedCard={selectedCard}
+                    isOpen={isDeleteCardPopupOpen}
+                    onClose={closeAllPopups}
+                    onDeleteCard={handleCardDelete}
+                    submitButtonText={submitDeleteButtonText}
+                />
+
                 <ImagePopup
                     selectedCard={selectedCard}
                     isOpen={isCardPopupOpen}
