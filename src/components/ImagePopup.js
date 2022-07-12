@@ -1,4 +1,4 @@
-function ImagePopup({isOpen, selectedCard, onClose}) {
+function ImagePopup({ isOpen, selectedCard, onClose }) {
     
     return (
             <section id="foto-popup" className={`popup popup_type_foto-popup ${isOpen && 'popup_active'}`}>
