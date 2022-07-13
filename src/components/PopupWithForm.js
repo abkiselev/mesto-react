@@ -10,9 +10,9 @@ function PopupWithForm(props) {
                         {props.children}
                         <button type="submit" className={`popup__button ${!props.isFormValid && 'popup__button_disabled'}`}>{props.submitButtonText}</button>
                     </form>
-                    <button className="popup__close" type="button" onClick={props.onClose}></button>
+                    <button className="popup__close" type="button" onClick={props.onClose} />
                 </div>
-                <div className="popup__bg" onClick={props.onClose}></div>
+                <div className="popup__bg" onClick={props.onClose} />
             </section>
     );
 }

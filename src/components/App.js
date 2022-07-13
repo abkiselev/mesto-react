@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import Footer from './Footer';
 import Header from './Header';
 import ImagePopup from './ImagePopup';
@@ -32,20 +32,24 @@ function App() {
             .then(res =>{
                 setInitialCards(res)
             })
+            .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`));
     }, [cards])
 
     useEffect(() => {
         api.getProfileInfo()
             .then(res => setCurrentUser(res))
+            .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`));
     }, [])
 
 
     function handleCardLike(card) {
         const isLiked = card.likes.some(i => i._id === currentUser._id);
         
-        api.setCardLike(card._id, !isLiked ? 'PUT' : 'DELETE').then((newCard) => {
-            setInitialCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-        });
+        api.setCardLike(card._id, !isLiked ? 'PUT' : 'DELETE')
+            .then((newCard) => {
+                setInitialCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+            })
+            .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`));
     } 
     
 
@@ -57,6 +61,7 @@ function App() {
                 setInitialCards((newCards) => newCards.filter((c) => c._id !== card._id));
                 closeAllPopups();
             })
+            .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`))
             .finally(() => {
                 setSubmitDeleteButtonText("Да");
             })
@@ -70,6 +75,7 @@ function App() {
                 setInitialCards([...cards, res]);
                 closeAllPopups();
             })
+            .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`))
             .finally(() => {
                 setSubmitButtonText("Сохранить");
             })
@@ -84,6 +90,7 @@ function App() {
                 setCurrentUser(res);
                 closeAllPopups();
             })
+            .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`))
             .finally(() => {
                 setSubmitButtonText("Сохранить");
             })
@@ -97,6 +104,7 @@ function App() {
                 setCurrentUser(res);
                 closeAllPopups();
             })
+            .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`))
             .finally(() => {
                 setSubmitButtonText("Сохранить");
             })

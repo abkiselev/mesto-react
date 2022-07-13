@@ -16,12 +16,12 @@ function Main ({ cards, onEditAvatar, onEditProfile, onAddPlace, onCardClick, on
                         <div className="profile__info">
                             <div className="profile__title">
                                 <h1 className="profile__name">{currentUser.name}</h1>
-                                <button className="profile__edit-button" type="button" onClick={onEditProfile}></button>
+                                <button className="profile__edit-button" type="button" onClick={onEditProfile} />
                             </div>
                             <p className="profile__description">{currentUser.about}</p>
                         </div>
                 </div>
-                <button className="profile__add-button" type="button" onClick={onAddPlace}></button>
+                <button className="profile__add-button" type="button" onClick={onAddPlace} />
             </section>
 
             <section>
