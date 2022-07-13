@@ -5,9 +5,9 @@ function ImagePopup({ isOpen, selectedCard, onClose }) {
                 <div className="popup__foto">
                     <img className="popup__img" src={selectedCard.link} alt={selectedCard.name} />
                     <h2 className="popup__text">{selectedCard.name}</h2>
-                    <button className="popup__close" type="button" onClick={onClose}></button>
+                    <button className="popup__close" type="button" onClick={onClose} />
                 </div>
-                <div className="popup__bg" onClick={onClose}></div>
+                <div className="popup__bg" onClick={onClose} />
             </section>
     );
 }

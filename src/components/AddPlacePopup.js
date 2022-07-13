@@ -1,65 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PopupWithForm from './PopupWithForm';
+import UseValidation from '../hooks/UseValidation';
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace, submitButtonText }) {
-    const [name, setName] = useState('');
-    const [link, setLink] = useState('');
-
-    const [nameErrorMessage, setNameErrorMessage] = useState('');
-    const [linkErrorMessage, setLinkErrorMessage] = useState('');
-    const [isNameValid, setIsNameValid] = useState(false);
-    const [isLinkValid, setIsLinkValid] = useState(false);
-    const [isFormValid, setIsFormValid] = useState(false);
-
-    function handleNameChange(e) {
-        setName(e.target.value);
-        e.target.validity.valid ? setNameErrorMessage('') : setNameErrorMessage(e.target.validationMessage);
-        setIsNameValid(e.target.validity.valid)
-    }
-
-    function handleLinkChange(e) {
-        setLink(e.target.value);
-        e.target.validity.valid ? setLinkErrorMessage('') : setLinkErrorMessage(e.target.validationMessage);
-        setIsLinkValid(e.target.validity.valid)
-    }
-
+    const { isFormValid, values, handleValues, errors, setInitialValues } = UseValidation();
+    
     useEffect(() => {
-        if(isNameValid && isLinkValid) {
-            setIsFormValid(true)
-        }
-        else {
-            setIsFormValid(false)
-        }
-    }, [isNameValid, isLinkValid])
+        setInitialValues({name: '', link: ''})        
+    }, [isOpen])
 
 
     function handleSubmit(e) {
-        e.preventDefault();
-      
-        onAddPlace({ name, link });
-
-        setName('');
-        setLink('');
-        setNameErrorMessage('');
-        setLinkErrorMessage('');
-        setIsFormValid(false);
-    } 
-
-    function handleClosePopup() {
-        onClose()
-
-        setName('');
-        setLink('');
-        setNameErrorMessage('');
-        setLinkErrorMessage('');
-        setIsFormValid(false);
+        e.preventDefault();     
+        onAddPlace({ name: values.name, link: values.link});
     } 
 
 
     return (
         <PopupWithForm
                     onSubmit={handleSubmit}
-                    onClose={handleClosePopup}
+                    onClose={onClose}
                     isOpen={isOpen}
                     name='add-card'
                     title='Новое место'
@@ -69,8 +29,8 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, submitButtonText }) {
                     
                 <fieldset className="popup__inputs">
                     <input 
-                    value={name}
-                    onChange={handleNameChange}
+                    value={values.name || ''}
+                    onChange={handleValues}
                     name="name"
                     id="edit-foto-name"
                     className="popup__input popup__input_type_mesto-name" 
@@ -81,11 +41,11 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, submitButtonText }) {
                     noValidate
                     required
                     />
-                    <p className="popup__error edit-foto-name-error">{nameErrorMessage}</p>
+                    <p className="popup__error edit-foto-name-error">{errors.name}</p>
 
                     <input 
-                    value={link}
-                    onChange={handleLinkChange}
+                    value={values.link || ''}
+                    onChange={handleValues}
                     name="link"
                     id="edit-foto-url"
                     className="popup__input popup__input_type_mesto-url" 
@@ -94,7 +54,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, submitButtonText }) {
                     noValidate
                     required
                     />
-                    <p className="popup__error edit-foto-url-error">{linkErrorMessage}</p>
+                    <p className="popup__error edit-foto-url-error">{errors.link}</p>
                 </fieldset>
                         
         </PopupWithForm>

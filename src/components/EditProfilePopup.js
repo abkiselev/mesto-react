@@ -1,67 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import PopupWithForm from './PopupWithForm';
+import UseValidation from '../hooks/UseValidation';
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser, submitButtonText }) {
     const currentUser = React.useContext(CurrentUserContext);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 
-    const [nameErrorMessage, setNameErrorMessage] = useState('');
-    const [descriptionErrorMessage, setDescriptionErrorMessage] = useState('');
-    const [isNameValid, setIsNameValid] = useState(true);
-    const [isDescriptionValid, setIsDescriptionValid] = useState(true);
-    const [isFormValid, setIsFormValid] = useState(false);
-
-
-    useEffect(() => {
-        setName(currentUser.name);
-        setDescription(currentUser.about);
-    }, [currentUser]); 
-
+    const { isFormValid, handleValues, errors } = UseValidation();
 
     function handleNameChange(e) {
         setName(e.target.value);
-        e.target.validity.valid ? setNameErrorMessage('') : setNameErrorMessage(e.target.validationMessage);
-        setIsNameValid(e.target.validity.valid)
-    }
+        handleValues(e)
+    } 
 
-    function handleDescriptionChange(e) {
+    function handleAboutChange(e) {
         setDescription(e.target.value);
-        e.target.validity.valid ? setDescriptionErrorMessage('') : setDescriptionErrorMessage(e.target.validationMessage);
-        setIsDescriptionValid(e.target.validity.valid)
-    }
-
-    useEffect(() => {
-        if(isNameValid && isDescriptionValid) {
-            setIsFormValid(true)
-        }
-        else {
-            setIsFormValid(false)
-        }
-    }, [isNameValid, isDescriptionValid])
+        handleValues(e)
+    } 
+ 
+    useEffect(() => { 
+        setName(currentUser.name);
+        setDescription(currentUser.about);
+    }, [currentUser, isOpen]); 
 
 
     function handleSubmit(e) {
-        e.preventDefault();
-      
+        e.preventDefault();      
         onUpdateUser({ name, about: description });
-    } 
-
-    function handleClosePopup() {
-        onClose()
-
-        setName(currentUser.name);
-        setDescription(currentUser.about);
-        setNameErrorMessage('');
-        setDescriptionErrorMessage('');
     } 
 
 
     return (
         <PopupWithForm
                     onSubmit={handleSubmit}
-                    onClose={handleClosePopup}
+                    onClose={onClose}
                     isOpen={isOpen}
                     name='edit-profile'
                     title='Редактировать профиль'
@@ -83,11 +57,11 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, submitButtonText }) {
                         noValidate
                         required
                         />
-                        <p className="popup__error edit-profile-name-error">{nameErrorMessage}</p>
+                        <p className="popup__error edit-profile-name-error">{errors.name}</p>
 
                         <input 
                         value={description ?? ""}
-                        onChange={handleDescriptionChange}
+                        onChange={handleAboutChange}
                         name="about"
                         id="edit-profile-bio"
                         className="popup__input popup__input_type_descr" 
@@ -97,7 +71,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, submitButtonText }) {
                         noValidate
                         required
                         />
-                        <p className="popup__error edit-profile-bio-error">{descriptionErrorMessage}</p>
+                        <p className="popup__error edit-profile-bio-error">{errors.about}</p>
 
                     </fieldset>
 
