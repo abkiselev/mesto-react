@@ -8,7 +8,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, submitButtonText }) {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 
-    const { isFormValid, handleValues, errors } = UseValidation();
+    const { isFormValid, handleValues, errors, setErrors, setValues, setIsFormValid, values } = UseValidation();
 
     function handleNameChange(e) {
         setName(e.target.value);
@@ -21,8 +21,11 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, submitButtonText }) {
     } 
  
     useEffect(() => { 
-        setName(currentUser.name);
-        setDescription(currentUser.about);
+        if(isOpen){
+            setName(currentUser.name);
+            setDescription(currentUser.about);
+            setErrors({})
+        }
     }, [currentUser, isOpen]); 
 
 
