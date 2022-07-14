@@ -6,12 +6,10 @@ function UseValidation() {
     const [errors, setErrors] = useState({});
     const [isFormValid, setIsFormValid] = useState(false);
 
-    function handleValues(e, currentValues) {
-        
+    function handleValues(e) {
         setValues({...values, [e.target.name]: e.target.value})
-        setIsValuesValid({...isValuesValid, ...currentValues,  [e.target.name]: e.target.validity.valid})
-        setErrors({...errors, ...currentValues,  [e.target.name]: e.target.validationMessage})
-
+        setIsValuesValid({...isValuesValid, [e.target.name]: e.target.validity.valid})
+        setErrors({...errors, [e.target.name]: e.target.validationMessage})
     }
 
     function setInitialValues(initialInputs) {
@@ -36,7 +34,10 @@ function UseValidation() {
         values,
         handleValues, 
         errors, 
-        setInitialValues
+        setInitialValues,
+        setIsFormValid,
+        setErrors,
+        setValues
 
     });
 }

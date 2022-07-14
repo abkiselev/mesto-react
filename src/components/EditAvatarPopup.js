@@ -7,7 +7,9 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, submitButtonText}) {
     const { isFormValid, values, handleValues, errors, setInitialValues } = UseValidation(); 
 
     useEffect(() => {
-        setInitialValues({ avatar: '' })
+        if(isOpen){
+            setInitialValues({ avatar: '' })
+        }
     }, [isOpen])
 
 

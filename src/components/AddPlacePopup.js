@@ -6,7 +6,9 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, submitButtonText }) {
     const { isFormValid, values, handleValues, errors, setInitialValues } = UseValidation();
     
     useEffect(() => {
-        setInitialValues({name: '', link: ''})        
+        if(isOpen){
+            setInitialValues({name: '', link: ''}) 
+        }    
     }, [isOpen])
 
 

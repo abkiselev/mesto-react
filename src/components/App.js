@@ -33,7 +33,7 @@ function App() {
                 setInitialCards(res)
             })
             .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`));
-    }, [cards])
+    }, [])
 
     useEffect(() => {
         api.getProfileInfo()
@@ -72,7 +72,7 @@ function App() {
 
         api.createNewCard({name, link})
             .then(res => {
-                setInitialCards([...cards, res]);
+                setInitialCards([res, ...cards]);
                 closeAllPopups();
             })
             .catch(err => console.log(`${err.message}, Что-то пошло не так, попробуйте обновить страницу`))
